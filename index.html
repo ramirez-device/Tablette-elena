@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#d8d0b9">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Tablette personnelle — Elena Ramirez</title>
+<style>
+:root{
+  --beige:#d8d0b9;
+  --beige-soft:#ece7d7;
+  --green:#6e8064;
+  --green-deep:#55634e;
+  --olive:#8e9b78;
+  --ink:#222528;
+  --muted:#70756f;
+  --paper:#f8f5ee;
+  --line:#ddd8cc;
+  --white:#fff;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;background:linear-gradient(135deg,#c9c1ab,#8a9674 55%,#65765a);overflow:hidden}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+#stage{height:100dvh;display:grid;place-items:center;padding:14px}
+#tablet{
+  width:min(1180px,98vw);
+  aspect-ratio:4/3;
+  background:#111;
+  border-radius:34px;
+  box-shadow:0 28px 70px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.18);
+  padding:14px;
+  position:relative;
+}
+#tablet:before{
+  content:"";
+  position:absolute;
+  inset:8px auto auto 50%;
+  width:86px;height:7px;transform:translateX(-50%);
+  background:rgba(0,0,0,.55);border-radius:999px;z-index:15;
+}
+#screen{
+  position:relative;
+  width:100%;height:100%;
+  border-radius:24px;
+  overflow:hidden;
+  background:var(--paper);
+}
+#home{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(rgba(18,18,18,.20),rgba(18,18,18,.15)),
+    url("assets/elena-wallpaper.png") center/cover no-repeat;
+  color:#fff;
+}
+.home-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.08) 40%,rgba(0,0,0,.25))}
+.status{
+  position:absolute;left:0;right:0;top:0;height:38px;padding:10px 18px;display:flex;justify-content:space-between;align-items:center;z-index:3;font-size:13px;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.35)
+}
+.hero{position:absolute;left:24px;top:56px;z-index:3}
+.big-time{font-size:56px;font-weight:300;letter-spacing:-2px;line-height:1}
+.big-date{font-size:16px;margin-top:6px;color:rgba(255,255,255,.92)}
+.quote{margin-top:18px;max-width:340px;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.18);backdrop-filter:blur(18px);font-size:14px}
+.apps{
+  position:absolute;left:22px;right:22px;bottom:104px;
+  display:grid;grid-template-columns:repeat(5, minmax(80px,1fr));gap:16px;z-index:3;max-width:680px
+}
+.app{border:0;background:none;color:#fff;text-align:center;padding:0}
+.icon{width:74px;height:74px;margin:0 auto 8px;border-radius:20px;display:grid;place-items:center;font-size:34px;box-shadow:0 10px 26px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.25)}
+.app span{display:block;font-size:12px;font-weight:650;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+.i1{background:linear-gradient(145deg,#9d937b,#d6ccb4)}
+.i2{background:linear-gradient(145deg,#70825f,#9eac89)}
+.i3{background:linear-gradient(145deg,#819273,#cfc4ad)}
+.i4{background:linear-gradient(145deg,#6a7e61,#b9c5a5)}
+.i5{background:linear-gradient(145deg,#8a7b5f,#ccb792)}
+.dock{
+  position:absolute;left:50%;bottom:18px;transform:translateX(-50%);
+  min-width:360px;max-width:92%;
+  padding:12px 18px;height:72px;border-radius:24px;
+  background:rgba(238,231,215,.36);backdrop-filter:blur(22px);
+  border:1px solid rgba(255,255,255,.25);display:flex;gap:16px;align-items:center;justify-content:center;z-index:3
+}
+.dock button{border:0;background:none;color:#fff;font-size:28px}
+.window{position:absolute;inset:0;background:var(--paper);display:none;color:var(--ink);z-index:20}
+.window.open{display:block}
+.topbar{height:62px;background:rgba(248,245,238,.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:5}
+.topbar h2{margin:0;font-size:22px}
+.left,.right{display:flex;align-items:center;gap:10px}
+.btn{border:0;border-radius:12px;padding:10px 13px;font-weight:700}
+.back{background:#ece7da;color:var(--green-deep)}
+.primary{background:var(--green);color:#fff}
+.secondary{background:#ece7da;color:#3a4136}
+.danger{background:#fde7e7;color:#a13d49}
+.content{height:calc(100% - 62px);overflow:auto;padding:18px}
+.grid-2{display:grid;grid-template-columns:280px 1fr;gap:18px;height:100%}
+.sidebar{background:#efebdf;border:1px solid var(--line);border-radius:18px;padding:12px;overflow:auto}
+.main{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;overflow:auto}
+.item{padding:12px;border-radius:14px;border:1px solid #e8e1d2;background:#fff;margin-bottom:10px;cursor:pointer}
+.item.active{background:#f2efe6;border-color:#b6c2a5}
+.t{font-weight:750} .m{font-size:12px;color:var(--muted);margin-top:4px}
+.field{margin-bottom:13px}
+label{display:block;font-size:12px;font-weight:700;color:#666b65;margin-bottom:6px}
+input,textarea,select{width:100%;padding:11px 12px;border:1px solid #dad5c8;border-radius:12px;background:#fff;color:var(--ink);outline:none}
+textarea{min-height:170px;resize:vertical}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.media{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.media img{width:100%;height:146px;object-fit:cover;background:#ece8de;display:block}
+.media .pad{padding:10px}
+.folders{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
+.folder{background:linear-gradient(150deg,#fff7ea,#ebe2cf);border:1px solid #e1d6c1;border-radius:18px;padding:16px;cursor:pointer}
+.folder .em{font-size:32px} .folder b{display:block;margin-top:7px} .folder small{color:#7c7f79}
+.badge{display:inline-block;padding:5px 9px;border-radius:999px;background:#eef2e7;color:#5a6a4e;font-size:12px;font-weight:700}
+.empty{height:100%;display:grid;place-items:center;color:#80847e;text-align:center;min-height:200px}
+.obs{padding:10px 12px;border-left:3px solid var(--green);background:#f4f7ef;border-radius:10px;margin-top:8px}
+.modal{position:absolute;inset:0;background:rgba(0,0,0,.45);display:none;place-items:center;padding:18px;z-index:10}
+.modal.open{display:grid}
+.sheet{width:min(700px,96vw);max-height:88%;overflow:auto;background:#fff;border-radius:24px;padding:18px;box-shadow:0 28px 60px rgba(0,0,0,.32)}
+.sheet img{max-width:100%;display:block;margin:auto;border-radius:16px}
+.closex{float:right;border:0;background:#efeadf;border-radius:50%;width:34px;height:34px}
+@media (max-width:900px){
+  #tablet{width:100vw;height:100dvh;aspect-ratio:auto;border-radius:0;padding:0}
+  #tablet:before{display:none}
+  #screen{border-radius:0}
+  .apps{grid-template-columns:repeat(3,1fr);max-width:none;bottom:98px}
+  .grid-2{grid-template-columns:1fr}
+  .sidebar{max-height:220px}
+}
+
+/* Elena lock screen */
+#lockscreen{position:absolute;inset:0;z-index:1000;background:linear-gradient(rgba(20,30,22,.34),rgba(20,30,22,.55)),url("assets/elena-wallpaper.png") center/cover;display:flex;align-items:center;justify-content:center;color:white}
+.lockbox{width:min(360px,88%);text-align:center;padding:28px;border-radius:28px;background:rgba(24,32,25,.38);backdrop-filter:blur(18px);box-shadow:0 18px 50px #0007}
+.locktime{font-size:58px;font-weight:300;line-height:1}.lockdate{margin:6px 0 22px}.locktitle{font-size:17px;margin-bottom:12px}.dots{height:28px;letter-spacing:10px;font-size:24px}.lockmsg{height:22px;font-size:13px;color:#ffe7e7;margin:4px 0 8px}.keypad{display:grid;grid-template-columns:repeat(3,68px);gap:10px;justify-content:center}.key{width:68px;height:54px;border:0;border-radius:18px;background:#ffffff2b;color:#fff;font-size:21px;cursor:pointer}.key:hover{background:#ffffff45}.key.empty{visibility:hidden}.key.del{font-size:17px}.lockedout .key{pointer-events:none;opacity:.45}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="tablet">
+    <div id="screen">
+
+      <section id="lockscreen">
+        <div class="lockbox" id="lockbox">
+          <div class="locktime" id="lockTm">00:00</div><div class="lockdate" id="lockDt"></div>
+          <div class="locktitle">Saisissez le code</div><div class="dots" id="lockDots">○ ○ ○ ○</div><div class="lockmsg" id="lockMsg"></div>
+          <div class="keypad">
+            <button class="key">1</button><button class="key">2</button><button class="key">3</button>
+            <button class="key">4</button><button class="key">5</button><button class="key">6</button>
+            <button class="key">7</button><button class="key">8</button><button class="key">9</button>
+            <button class="key empty">•</button><button class="key">0</button><button class="key del">⌫</button>
+          </div>
+        </div>
+      </section>
+      <section id="home">
+        <div class="home-overlay"></div>
+        <div class="status"><span id="st">00:00</span><span>Wi‑Fi &nbsp; 100%</span></div>
+        <div class="hero">
+          <div class="big-time" id="tm">00:00</div>
+          <div class="big-date" id="dt"></div>
+          <div class="quote">« Certaines choses sont plus simples à écrire qu'à raconter. »</div>
+        </div>
+        <div class="apps">
+          <button class="app" data-open="journal"><div class="icon i1">📖</div><span>Journal</span></button>
+          <button class="app" data-open="research"><div class="icon i2">🔎</div><span>Recherches</span></button>
+          <button class="app" data-open="drawings"><div class="icon i3">🎨</div><span>Dessins</span></button>
+          <button class="app" data-open="gallery"><div class="icon i4">🖼️</div><span>Galerie</span></button>
+          <button class="app" data-open="past"><div class="icon i5">🧳</div><span>Passé</span></button>
+        </div>
+        <div class="dock">
+          <button data-open="journal">📖</button>
+          <button data-open="research">🔎</button>
+          <button data-open="gallery">🖼️</button>
+          <button data-open="past">🧳</button>
+        </div>
+      </section>
+
+      <section class="window" id="journal">
+        <div class="topbar"><div class="left"><button class="btn back" data-home>‹ Accueil</button><h2>Journal</h2></div><div class="right"><button class="btn primary" id="addJournal">+ Nouvelle note</button></div></div>
+        <div class="content"><div class="grid-2"><div class="sidebar" id="journalList"></div><div class="main" id="journalMain"></div></div></div>
+      </section>
+
+      <section class="window" id="research">
+        <div class="topbar"><div class="left"><button class="btn back" data-home>‹ Accueil</button><h2>Recherches</h2></div><div class="right"><button class="btn primary" id="addResearch">+ Nouvelle recherche</button></div></div>
+        <div class="content"><div class="grid-2"><div class="sidebar" id="researchList"></div><div class="main" id="researchMain"></div></div></div>
+      </section>
+
+      <section class="window" id="drawings">
+        <div class="topbar"><div class="left"><button class="btn back" data-home>‹ Accueil</button><h2>Dessins</h2></div><div class="right"><label class="btn primary">+ Ajouter<input id="drawingUpload" type="file" accept="image/*" hidden></label></div></div>
+        <div class="content"><div class="row"><span class="badge">Dessins importés</span></div><br><div class="media-grid" id="drawingGrid"></div></div>
+      </section>
+
+      <section class="window" id="gallery">
+        <div class="topbar"><div class="left"><button class="btn back" data-home>‹ Accueil</button><h2>Galerie</h2></div><div class="right"><label class="btn primary">+ Ajouter des photos<input id="galleryUpload" type="file" accept="image/*" multiple hidden></label></div></div>
+        <div class="content"><div class="media-grid" id="galleryGrid"></div></div>
+      </section>
+
+      <section class="window" id="past">
+        <div class="topbar"><div class="left"><button class="btn back" data-home>‹ Accueil</button><h2>Passé</h2></div><div class="right"><button class="btn primary" id="addFolder">+ Nouveau dossier</button></div></div>
+        <div class="content"><div class="folders" id="folderGrid"></div><div id="folderView" style="margin-top:18px"></div></div>
+      </section>
+
+      <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const uid=()=>String(Date.now())+Math.random().toString(16).slice(2);
+const today=()=>new Date().toISOString().slice(0,10);
+const esc=s=>String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const dateFR=s=>!s?'Sans date':new Date(s+'T12:00').toLocaleDateString('fr-FR');
+const LS={j:'elena_v2_journal',r:'elena_v2_research',f:'elena_v2_folders',p:'elena_v2_past'};
+const get=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}};
+const set=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+
+let journals=get(LS.j,[{id:uid(),title:'Retour à Los Santos',date:today(),body:"Je suis revenue pour Adrian... mais aussi parce que j'avais besoin d'arrêter de courir."}]);
+let researches=get(LS.r,[{id:uid(),title:'Adrian — ce que je ne comprends pas',status:'En cours',date:today(),summary:"Comprendre certains changements de comportement sans tirer de conclusions trop vite.",obs:[]}]);
+let folders=get(LS.f,[{id:'voyages',name:'Voyages',em:'✈️'},{id:'louise',name:'Louise Carter',em:'🪪'},{id:'souvenirs',name:'Souvenirs',em:'🗝️'},{id:'suivi',name:'Suivi',em:'🧠'},{id:'documents',name:'Documents',em:'📄'}]);
+let past=get(LS.p,[{id:uid(),folder:'louise',title:'Louise Carter',date:'',body:"À certaines personnes, je ne me présentais pas comme Elena Ramirez."},{id:uid(),folder:'voyages',title:'Une nuit',date:'',body:"Je savais seulement que je devais partir. Pas demain. Pas après avoir dormi. Maintenant."}]);
+let selectedJournal=journals[0]?.id||null, selectedResearch=researches[0]?.id||null;
+
+function tick(){
+  const d=new Date(), t=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  $('#st').textContent=t; $('#tm').textContent=t;
+  $('#dt').textContent=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+tick(); setInterval(tick,30000);
+
+$$('[data-open]').forEach(b=>b.onclick=()=>openApp(b.dataset.open));
+$$('[data-home]').forEach(b=>b.onclick=closeApps);
+
+function openApp(id){$('#home').style.display='none'; $$('.window').forEach(w=>w.classList.remove('open')); $('#'+id).classList.add('open'); if(id==='journal')renderJournal(); if(id==='research')renderResearch(); if(id==='gallery')renderMedia('gallery'); if(id==='drawings')renderMedia('drawing'); if(id==='past')renderPast();}
+function closeApps(){$$('.window').forEach(w=>w.classList.remove('open')); $('#home').style.display='block';}
+
+function renderJournal(){
+  $('#journalList').innerHTML=journals.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(j=>`<div class="item ${j.id===selectedJournal?'active':''}" data-j="${j.id}"><div class="t">${esc(j.title)}</div><div class="m">${dateFR(j.date)}</div></div>`).join('')||'<div class="empty">Aucune entrée</div>';
+  $$('[data-j]').forEach(el=>el.onclick=()=>{selectedJournal=el.dataset.j; renderJournal();});
+  const j=journals.find(x=>x.id===selectedJournal);
+  $('#journalMain').innerHTML=!j?'<div class="empty">Crée une note pour commencer.<br><small>Tu pourras ensuite la modifier ou la supprimer à tout moment.</small></div>':`
+    <div class="field"><label>Titre</label><input id="jt" value="${esc(j.title)}"></div>
+    <div class="field"><label>Date</label><input id="jd" type="date" value="${j.date||''}"></div>
+    <div class="field"><label>Contenu de la note</label><textarea id="jb">${esc(j.body||'')}</textarea></div>
+    <div class="row"><button class="btn primary" id="js">Enregistrer</button><button class="btn danger" id="jx">Supprimer</button></div>`;
+  if(j){
+    $('#js').onclick=()=>{j.title=$('#jt').value;j.date=$('#jd').value;j.body=$('#jb').value;set(LS.j,journals);renderJournal();};
+    $('#jx').onclick=()=>{if(confirm('Supprimer cette note ?')){journals=journals.filter(x=>x.id!==j.id);selectedJournal=journals[0]?.id||null;set(LS.j,journals);renderJournal();}};
+  }
+}
+$('#addJournal').onclick=()=>{const j={id:uid(),title:'Nouvelle note',date:today(),body:''};journals.push(j);selectedJournal=j.id;set(LS.j,journals);renderJournal();};
+
+function renderResearch(){
+  $('#researchList').innerHTML=researches.map(r=>`<div class="item ${r.id===selectedResearch?'active':''}" data-r="${r.id}"><div class="t">${esc(r.title)}</div><div class="m">${esc(r.status)} · ${dateFR(r.date)}</div></div>`).join('')||'<div class="empty">Aucune recherche</div>';
+  $$('[data-r]').forEach(el=>el.onclick=()=>{selectedResearch=el.dataset.r; renderResearch();});
+  const r=researches.find(x=>x.id===selectedResearch);
+  $('#researchMain').innerHTML=!r?'<div class="empty">Crée une recherche pour commencer.</div>':`
+    <div class="field"><label>Titre</label><input id="rt" value="${esc(r.title)}"></div>
+    <div class="row">
+      <div class="field" style="flex:1"><label>Statut</label><select id="rs"><option ${r.status==='En cours'?'selected':''}>En cours</option><option ${r.status==='En pause'?'selected':''}>En pause</option><option ${r.status==='Terminé'?'selected':''}>Terminé</option></select></div>
+      <div class="field" style="flex:1"><label>Date</label><input id="rd" type="date" value="${r.date||''}"></div>
+    </div>
+    <div class="field"><label>Résumé / questions</label><textarea id="rr">${esc(r.summary||'')}</textarea></div>
+    <div class="row"><button class="btn primary" id="rsave">Enregistrer</button><button class="btn danger" id="rdel">Supprimer</button></div>
+    <hr style="border:0;border-top:1px solid var(--line);margin:18px 0">
+    <h3>Observations</h3>
+    <div>${(r.obs||[]).map((o,idx)=>`<div class="obs"><div class="m">${esc(o.when)}</div><div style="margin:6px 0 10px">${esc(o.text)}</div><div class="row"><button class="btn secondary" data-oedit="${idx}" style="padding:7px 9px">Modifier</button><button class="btn danger" data-odel="${idx}" style="padding:7px 9px">Supprimer</button></div></div>`).join('')||'<div class="m">Aucune observation.</div>'}</div>
+    <div class="field" style="margin-top:14px"><label>Nouvelle observation</label><textarea id="ro" style="min-height:90px"></textarea></div>
+    <button class="btn secondary" id="radd">+ Ajouter l'observation</button>`;
+  if(r){
+    $('#rsave').onclick=()=>{r.title=$('#rt').value;r.status=$('#rs').value;r.date=$('#rd').value;r.summary=$('#rr').value;set(LS.r,researches);renderResearch();};
+    $('#rdel').onclick=()=>{if(confirm('Supprimer cette recherche ?')){researches=researches.filter(x=>x.id!==r.id);selectedResearch=researches[0]?.id||null;set(LS.r,researches);renderResearch();}};
+    $('#radd').onclick=()=>{const t=$('#ro').value.trim(); if(!t) return; r.obs.push({when:new Date().toLocaleString('fr-FR'),text:t}); set(LS.r,researches); renderResearch();};
+    $$('[data-oedit]').forEach(el=>el.onclick=()=>{
+      const idx=Number(el.dataset.oedit);
+      const current=r.obs[idx];
+      const value=prompt('Modifier cette observation :', current.text);
+      if(value===null) return;
+      const cleaned=value.trim();
+      if(!cleaned) return;
+      current.text=cleaned;
+      current.when=new Date().toLocaleString('fr-FR')+' · modifiée';
+      set(LS.r,researches);
+      renderResearch();
+    });
+    $$('[data-odel]').forEach(el=>el.onclick=()=>{
+      const idx=Number(el.dataset.odel);
+      if(!confirm('Supprimer cette observation ?')) return;
+      r.obs.splice(idx,1);
+      set(LS.r,researches);
+      renderResearch();
+    });
+  }
+}
+$('#addResearch').onclick=()=>{const r={id:uid(),title:'Nouvelle recherche',status:'En cours',date:today(),summary:'',obs:[]};researches.push(r);selectedResearch=r.id;set(LS.r,researches);renderResearch();};
+
+function renderPast(){
+  $('#folderGrid').innerHTML=folders.map(f=>{
+    const count=past.filter(p=>p.folder===f.id).length;
+    return `<div class="folder">
+      <div class="em">${f.em||'📁'}</div>
+      <b>${esc(f.name)}</b>
+      <small>${count} dossier${count>1?'s':''} à l’intérieur</small>
+      <div class="row" style="margin-top:12px">
+        <button class="btn primary" data-fopen="${f.id}" style="padding:7px 9px">Ouvrir</button>
+        <button class="btn secondary" data-fedit="${f.id}" style="padding:7px 9px">Modifier</button>
+        <button class="btn danger" data-fdel="${f.id}" style="padding:7px 9px">Supprimer</button>
+      </div>
+    </div>`;
+  }).join('');
+  $$('[data-fopen]').forEach(el=>el.onclick=()=>showFolder(el.dataset.fopen));
+  $$('[data-fedit]').forEach(el=>el.onclick=()=>editFolder(el.dataset.fedit));
+  $$('[data-fdel]').forEach(el=>el.onclick=()=>deleteFolder(el.dataset.fdel));
+  $('#folderView').innerHTML='';
+}
+$('#addFolder').onclick=()=>editFolder(null);
+
+function editFolder(fid){
+  const existing=fid?folders.find(x=>x.id===fid):null;
+  const f=existing||{id:uid(),name:'Nouveau dossier',em:'📁'};
+  openModal(`<h3>${fid?'Modifier le dossier':'Nouveau dossier'}</h3>
+    <div class="field"><label>Nom</label><input id="fn" value="${esc(f.name)}"></div>
+    <div class="field"><label>Icône / emoji</label><input id="fe" value="${esc(f.em||'📁')}" maxlength="4"></div>
+    <div class="row"><button class="btn primary" id="fs">Enregistrer</button>${fid?'<button class="btn danger" id="fd">Supprimer le dossier</button>':''}</div>`);
+  $('#fs').onclick=()=>{
+    const name=$('#fn').value.trim();
+    if(!name) return;
+    f.name=name;
+    f.em=$('#fe').value.trim()||'📁';
+    if(!fid) folders.push(f);
+    set(LS.f,folders);
+    closeModal();
+    renderPast();
+  };
+  if(fid) $('#fd').onclick=()=>deleteFolder(fid,true);
+}
+
+function deleteFolder(fid,fromModal=false){
+  const f=folders.find(x=>x.id===fid);
+  if(!f) return;
+  const count=past.filter(x=>x.folder===fid).length;
+  const message=count
+    ? `Supprimer le dossier "${f.name}" et ses ${count} élément(s) ? Cette action supprimera aussi tout son contenu.`
+    : `Supprimer le dossier "${f.name}" ?`;
+  if(!confirm(message)) return;
+  folders=folders.filter(x=>x.id!==fid);
+  past=past.filter(x=>x.folder!==fid);
+  set(LS.f,folders);
+  set(LS.p,past);
+  if(fromModal) closeModal();
+  renderPast();
+}
+
+function showFolder(fid){
+  const f=folders.find(x=>x.id===fid);
+  if(!f){ renderPast(); return; }
+  const items=past.filter(x=>x.folder===fid);
+  $('#folderView').innerHTML=`<div class="main">
+    <div class="row" style="justify-content:space-between;align-items:center">
+      <div>
+        <h3 style="margin:0">${f.em||'📁'} ${esc(f.name)}</h3>
+        <div class="m" style="margin-top:4px">Clique sur Consulter pour lire un dossier, ou utilise Modifier / Supprimer.</div>
+      </div>
+      <div class="row">
+        <button class="btn secondary" id="fmodify">Modifier la section</button>
+        <button class="btn primary" id="padd">+ Nouveau dossier</button>
+      </div>
+    </div>
+    <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
+    ${items.map(i=>`<div class="item">
+      <div class="t">${esc(i.title)}</div>
+      <div class="m">${dateFR(i.date)}</div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn primary" data-pview="${i.id}" style="padding:7px 9px">Consulter</button>
+        <button class="btn secondary" data-pedit="${i.id}" style="padding:7px 9px">Modifier</button>
+        <button class="btn danger" data-pdel="${i.id}" style="padding:7px 9px">Supprimer</button>
+      </div>
+    </div>`).join('')||'<div class="empty">Aucun dossier dans cette section.</div>'}
+  </div>`;
+  $('#fmodify').onclick=()=>editFolder(fid);
+  $('#padd').onclick=()=>editPast(null,fid);
+  $$('[data-pview]').forEach(el=>el.onclick=()=>viewPast(el.dataset.pview,fid));
+  $$('[data-pedit]').forEach(el=>el.onclick=()=>editPast(el.dataset.pedit,fid));
+  $$('[data-pdel]').forEach(el=>el.onclick=()=>deletePast(el.dataset.pdel,fid));
+}
+
+function viewPast(id,fid){
+  const i=past.find(x=>x.id===id);
+  if(!i) return;
+  openModal(`<h3>${esc(i.title)}</h3>
+    <div class="m" style="margin-bottom:14px">${dateFR(i.date)}</div>
+    <div style="white-space:pre-wrap;line-height:1.55;background:#f7f4ec;border:1px solid var(--line);border-radius:14px;padding:14px">${esc(i.body||'Aucun contenu.')}</div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn secondary" id="pvEdit">Modifier</button>
+      <button class="btn danger" id="pvDelete">Supprimer</button>
+    </div>`);
+  $('#pvEdit').onclick=()=>{closeModal();editPast(id,fid);};
+  $('#pvDelete').onclick=()=>{closeModal();deletePast(id,fid);};
+}
+
+function editPast(id,fid){
+  const i=id?past.find(x=>x.id===id):{id:uid(),folder:fid,title:'Nouveau dossier',date:today(),body:''};
+  openModal(`<h3>${id?'Modifier le dossier':'Nouveau dossier'}</h3>
+    <div class="field"><label>Titre</label><input id="pt" value="${esc(i.title)}"></div>
+    <div class="field"><label>Date</label><input id="pd" type="date" value="${i.date||''}"></div>
+    <div class="field"><label>Contenu</label><textarea id="pb">${esc(i.body||'')}</textarea></div>
+    <div class="row"><button class="btn primary" id="ps">Enregistrer</button>${id?'<button class="btn danger" id="px">Supprimer</button>':''}</div>`);
+  $('#ps').onclick=()=>{
+    i.title=$('#pt').value.trim()||'Sans titre';
+    i.date=$('#pd').value;
+    i.body=$('#pb').value;
+    if(!id) past.push(i);
+    set(LS.p,past);
+    closeModal();
+    renderPast();
+    showFolder(fid);
+  };
+  if(id) $('#px').onclick=()=>deletePast(id,fid,true);
+}
+
+function deletePast(id,fid,fromModal=false){
+  const i=past.find(x=>x.id===id);
+  if(!i) return;
+  if(!confirm(`Supprimer "${i.title}" ?`)) return;
+  past=past.filter(x=>x.id!==id);
+  set(LS.p,past);
+  if(fromModal) closeModal();
+  else closeModal();
+  renderPast();
+  showFolder(fid);
+}
+
+function openModal(html){$('#sheet').innerHTML=`<button class="closex" id="cx">×</button>${html}`; $('#modal').classList.add('open'); $('#cx').onclick=closeModal;}
+function closeModal(){$('#modal').classList.remove('open');}
+$('#modal').onclick=e=>{if(e.target.id==='modal') closeModal();};
+
+const DB='elena_v2_media', STORE='files'; let db;
+function dbOpen(){return new Promise((res,rej)=>{if(db) return res(db); const req=indexedDB.open(DB,1); req.onupgradeneeded=e=>{const d=e.target.result; if(!d.objectStoreNames.contains(STORE)) d.createObjectStore(STORE,{keyPath:'id'});}; req.onsuccess=e=>{db=e.target.result; res(db)}; req.onerror=()=>rej(req.error);})}
+async function putMedia(o){const d=await dbOpen(); return new Promise((res,rej)=>{const tx=d.transaction(STORE,'readwrite'); tx.objectStore(STORE).put(o); tx.oncomplete=res; tx.onerror=()=>rej(tx.error);})}
+async function getAll(){const d=await dbOpen(); return new Promise((res,rej)=>{const tx=d.transaction(STORE,'readonly'), rq=tx.objectStore(STORE).getAll(); rq.onsuccess=()=>res(rq.result); rq.onerror=()=>rej(rq.error);})}
+async function deleteMedia(id){const d=await dbOpen(); return new Promise((res,rej)=>{const tx=d.transaction(STORE,'readwrite'); tx.objectStore(STORE).delete(id); tx.oncomplete=res; tx.onerror=()=>rej(tx.error);})}
+function fileToDataURL(file){return new Promise((res,rej)=>{const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file);})}
+async function addFiles(files,kind){for(const file of files){await putMedia({id:uid(),kind,title:file.name,created:Date.now(),data:await fileToDataURL(file)});} renderMedia(kind);}
+async function renderMedia(kind){
+  const list=(await getAll()).filter(x=>x.kind===kind).sort((a,b)=>b.created-a.created);
+  const target=kind==='gallery'?$('#galleryGrid'):$('#drawingGrid');
+  target.innerHTML=list.map(m=>`<div class="media"><img src="${m.data}" data-mid="${m.id}" data-kind="${kind}"><div class="pad"><div class="t" style="font-size:14px">${esc(m.title)}</div><div class="m">${new Date(m.created).toLocaleDateString('fr-FR')}</div><div class="row" style="margin-top:9px"><button class="btn secondary" data-rename="${m.id}" data-kind="${kind}" style="padding:7px 9px">Renommer</button><button class="btn danger" data-delete="${m.id}" data-kind="${kind}" style="padding:7px 9px">Supprimer</button></div></div></div>`).join('')||`<div class="empty" style="grid-column:1/-1">${kind==='gallery'?'Ajoute les photos que tu veux conserver.':'Ajoute ici les dessins d’Elena que tu veux garder.'}</div>`;
+  $$('img[data-mid]').forEach(el=>el.onclick=()=>viewMedia(el.dataset.mid,el.dataset.kind));
+  $$('[data-rename]').forEach(el=>el.onclick=()=>renameMedia(el.dataset.rename,el.dataset.kind));
+  $$('[data-delete]').forEach(el=>el.onclick=()=>removeMedia(el.dataset.delete,el.dataset.kind));
+}
+async function viewMedia(id,kind){const m=(await getAll()).find(x=>x.id===id); if(!m) return; openModal(`<img src="${m.data}"><h3>${esc(m.title)}</h3>`);}
+async function renameMedia(id,kind){const arr=await getAll(); const m=arr.find(x=>x.id===id); const n=prompt('Nouveau titre :',m.title); if(!n) return; m.title=n; await putMedia(m); renderMedia(kind);}
+async function removeMedia(id,kind){if(!confirm('Supprimer cette image ?')) return; await deleteMedia(id); renderMedia(kind);}
+
+$('#galleryUpload').addEventListener('change',e=>addFiles([...e.target.files],'gallery'));
+$('#drawingUpload').addEventListener('change',e=>addFiles([...e.target.files],'drawing'));
+
+renderJournal(); renderResearch(); renderPast();
+})();
+</script>
+
+<script>
+(()=>{
+ const CODE='0347', lock=document.getElementById('lockscreen'), box=document.getElementById('lockbox'), dots=document.getElementById('lockDots'), msg=document.getElementById('lockMsg'); let entered='', fails=0, until=0, timer;
+ const paint=()=>dots.textContent=[0,1,2,3].map(i=>i<entered.length?'●':'○').join(' ');
+ const clock=()=>{const d=new Date(); document.getElementById('lockTm').textContent=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});document.getElementById('lockDt').textContent=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});}; clock();setInterval(clock,1000);
+ function countdown(){let n=Math.ceil((until-Date.now())/1000); if(n<=0){until=0;fails=0;box.classList.remove('lockedout');msg.textContent='';clearInterval(timer);return} msg.textContent=`Trop de tentatives. Réessayez dans ${Math.floor(n/60)}:${String(n%60).padStart(2,'0')}`;}
+ function check(){if(entered!==CODE){fails++;entered='';paint();msg.textContent='Code incorrect';if(fails>=3){until=Date.now()+5*60*1000;box.classList.add('lockedout');countdown();timer=setInterval(countdown,1000)}return} lock.style.display='none';entered='';paint();msg.textContent='';}
+ document.querySelectorAll('#lockscreen .key').forEach(k=>k.addEventListener('click',()=>{if(until>Date.now())return;let v=k.textContent.trim();if(v==='⌫'){entered=entered.slice(0,-1);paint();return}if(!/^\d$/.test(v)||entered.length>=4)return;entered+=v;paint();if(entered.length===4)setTimeout(check,120)}));
+})();
+</script>
+</body>
+</html>

@@ -128,12 +128,30 @@ textarea{min-height:170px;resize:vertical}
   .grid-2{grid-template-columns:1fr}
   .sidebar{max-height:220px}
 }
+
+/* Elena lock screen */
+#lockscreen{position:absolute;inset:0;z-index:1000;background:linear-gradient(rgba(20,30,22,.34),rgba(20,30,22,.55)),url("assets/elena-wallpaper.png") center/cover;display:flex;align-items:center;justify-content:center;color:white}
+.lockbox{width:min(360px,88%);text-align:center;padding:28px;border-radius:28px;background:rgba(24,32,25,.38);backdrop-filter:blur(18px);box-shadow:0 18px 50px #0007}
+.locktime{font-size:58px;font-weight:300;line-height:1}.lockdate{margin:6px 0 22px}.locktitle{font-size:17px;margin-bottom:12px}.dots{height:28px;letter-spacing:10px;font-size:24px}.lockmsg{height:22px;font-size:13px;color:#ffe7e7;margin:4px 0 8px}.keypad{display:grid;grid-template-columns:repeat(3,68px);gap:10px;justify-content:center}.key{width:68px;height:54px;border:0;border-radius:18px;background:#ffffff2b;color:#fff;font-size:21px;cursor:pointer}.key:hover{background:#ffffff45}.key.empty{visibility:hidden}.key.del{font-size:17px}.lockedout .key{pointer-events:none;opacity:.45}
 </style>
 </head>
 <body>
 <div id="stage">
   <div id="tablet">
     <div id="screen">
+
+      <section id="lockscreen">
+        <div class="lockbox" id="lockbox">
+          <div class="locktime" id="lockTm">00:00</div><div class="lockdate" id="lockDt"></div>
+          <div class="locktitle">Saisissez le code</div><div class="dots" id="lockDots">○ ○ ○ ○</div><div class="lockmsg" id="lockMsg"></div>
+          <div class="keypad">
+            <button class="key">1</button><button class="key">2</button><button class="key">3</button>
+            <button class="key">4</button><button class="key">5</button><button class="key">6</button>
+            <button class="key">7</button><button class="key">8</button><button class="key">9</button>
+            <button class="key empty">•</button><button class="key">0</button><button class="key del">⌫</button>
+          </div>
+        </div>
+      </section>
       <section id="home">
         <div class="home-overlay"></div>
         <div class="status"><span id="st">00:00</span><span>Wi‑Fi &nbsp; 100%</span></div>
@@ -154,6 +172,7 @@ textarea{min-height:170px;resize:vertical}
           <button data-open="research">🔎</button>
           <button data-open="gallery">🖼️</button>
           <button data-open="past">🧳</button>
+          <button id="exportBackup" title="Exporter la tablette">💾</button>
         </div>
       </section>
 
@@ -440,6 +459,63 @@ $('#galleryUpload').addEventListener('change',e=>addFiles([...e.target.files],'g
 $('#drawingUpload').addEventListener('change',e=>addFiles([...e.target.files],'drawing'));
 
 renderJournal(); renderResearch(); renderPast();
+})();
+</script>
+
+
+<script>
+(()=>{
+  const btn=document.getElementById('exportBackup');
+  if(!btn) return;
+  async function readMedia(){
+    return await new Promise((resolve,reject)=>{
+      const req=indexedDB.open('elena_v2_media',1);
+      req.onerror=()=>reject(req.error);
+      req.onupgradeneeded=e=>{
+        const d=e.target.result;
+        if(!d.objectStoreNames.contains('files')) d.createObjectStore('files',{keyPath:'id'});
+      };
+      req.onsuccess=e=>{
+        const d=e.target.result;
+        const tx=d.transaction('files','readonly');
+        const rq=tx.objectStore('files').getAll();
+        rq.onsuccess=()=>resolve(rq.result||[]);
+        rq.onerror=()=>reject(rq.error);
+      };
+    });
+  }
+  btn.addEventListener('click',async()=>{
+    const oldText=btn.textContent;
+    try{
+      btn.textContent='⏳';
+      const parse=(k,def)=>{try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(def));}catch{return def;}};
+      const backup={version:1,exportedAt:new Date().toISOString(),journal:parse('elena_v2_journal',[]),research:parse('elena_v2_research',[]),folders:parse('elena_v2_folders',[]),past:parse('elena_v2_past',[]),media:await readMedia()};
+      const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url;
+      a.download='sauvegarde-tablette-elena-'+new Date().toISOString().slice(0,10)+'.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+      btn.textContent='✅';
+      setTimeout(()=>btn.textContent=oldText,1500);
+    }catch(err){
+      console.error(err);
+      btn.textContent='⚠️';
+      alert("L’export n’a pas fonctionné. Recharge la page et réessaie.");
+      setTimeout(()=>btn.textContent=oldText,1800);
+    }
+  });
+})();
+</script>
+<script>
+(()=>{
+ const CODE='0347', lock=document.getElementById('lockscreen'), box=document.getElementById('lockbox'), dots=document.getElementById('lockDots'), msg=document.getElementById('lockMsg'); let entered='', fails=0, until=0, timer;
+ const paint=()=>dots.textContent=[0,1,2,3].map(i=>i<entered.length?'●':'○').join(' ');
+ const clock=()=>{const d=new Date(); document.getElementById('lockTm').textContent=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});document.getElementById('lockDt').textContent=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});}; clock();setInterval(clock,1000);
+ function countdown(){let n=Math.ceil((until-Date.now())/1000); if(n<=0){until=0;fails=0;box.classList.remove('lockedout');msg.textContent='';clearInterval(timer);return} msg.textContent=`Trop de tentatives. Réessayez dans ${Math.floor(n/60)}:${String(n%60).padStart(2,'0')}`;}
+ function check(){if(entered!==CODE){fails++;entered='';paint();msg.textContent='Code incorrect';if(fails>=3){until=Date.now()+5*60*1000;box.classList.add('lockedout');countdown();timer=setInterval(countdown,1000)}return} lock.style.display='none';entered='';paint();msg.textContent='';}
+ document.querySelectorAll('#lockscreen .key').forEach(k=>k.addEventListener('click',()=>{if(until>Date.now())return;let v=k.textContent.trim();if(v==='⌫'){entered=entered.slice(0,-1);paint();return}if(!/^\d$/.test(v)||entered.length>=4)return;entered+=v;paint();if(entered.length===4)setTimeout(check,120)}));
 })();
 </script>
 </body>
